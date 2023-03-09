@@ -11,7 +11,7 @@ const (
 	RouteName    = "local_route"
 	ListenerName = "listener_0"
 	ListenerPort = 10000
-	UpstreamHost = "192.168.12.91"
+	UpstreamHost = "192.168.176.1"
 	UpstreamPort = 8080
 )
 
@@ -27,7 +27,7 @@ func DeleteClusterEndpoint() {
 }
 
 func AddClusterEndpoint() {
-	clusterProp := GetClusterEndpoint()
+	clusterProp := resource.GetDefaultClusterEndpoint()
 	clusterProp.SocketAddress = append(clusterProp.SocketAddress, prop.SocketAddress{
 		Protocol:  core.SocketAddress_TCP,
 		Address:   UpstreamHost,

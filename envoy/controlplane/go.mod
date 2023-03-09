@@ -4,6 +4,8 @@ go 1.19
 
 require (
 	github.com/envoyproxy/go-control-plane v0.11.0
+	github.com/golang/protobuf v1.5.2
+	github.com/kataras/iris/v12 v12.2.0-beta7.0.20230308144943-005b829b44a2
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.29.0
 )
@@ -22,7 +24,6 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v0.9.1 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
@@ -30,7 +31,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kataras/blocks v0.0.7 // indirect
 	github.com/kataras/golog v0.1.8 // indirect
-	github.com/kataras/iris/v12 v12.2.0-beta7.0.20230308144943-005b829b44a2 // indirect
 	github.com/kataras/pio v0.0.11 // indirect
 	github.com/kataras/sitemap v0.0.6 // indirect
 	github.com/kataras/tunnel v0.0.4 // indirect

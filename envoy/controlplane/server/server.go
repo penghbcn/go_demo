@@ -31,11 +31,13 @@ const (
 
 type Server struct {
 	xdsServer server.Server
+	cache     cache.Cache
+	//grpcServer grpc.Server
 }
 
-func NewServer(ctx context.Context, cache cache.Cache, cb *test.Callbacks) *Server {
+func NewServer(ctx context.Context, cache cache.SnapshotCache, cb *test.Callbacks) *Server {
 	srv := server.NewServer(ctx, cache, cb)
-	return &Server{srv}
+	return &Server{srv, cache}
 }
 
 func (s *Server) registerServer(grpcServer *grpc.Server) {
