@@ -1,23 +1,10 @@
-// Copyright 2020 Envoyproxy Authors
-//
-//   Licensed under the Apache License, Version 2.0 (the "License");
-//   you may not use this file except in compliance with the License.
-//   You may obtain a copy of the License at
-//
-//       http://www.apache.org/licenses/LICENSE-2.0
-//
-//   Unless required by applicable law or agreed to in writing, software
-//   distributed under the License is distributed on an "AS IS" BASIS,
-//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//   See the License for the specific language governing permissions and
-//   limitations under the License.
-
 package resource
 
 import (
 	"control/plane/prop"
 	"github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/local_ratelimit/v3"
 	"github.com/envoyproxy/go-control-plane/envoy/type/v3"
+	"github.com/envoyproxy/go-control-plane/pkg/cache/types"
 	"github.com/golang/protobuf/ptypes/duration"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"time"
@@ -36,14 +23,14 @@ import (
 	"github.com/envoyproxy/go-control-plane/pkg/wellknown"
 )
 
-const (
-	ClusterName  = "example_proxy_cluster"
-	RouteName    = "local_route"
-	ListenerName = "listener_0"
-	ListenerPort = 10000
-	UpstreamHost = "192.168.176.1"
-	UpstreamPort = 8080
-)
+func makeClusters(clusterProps []prop.Cluster) []types.Resource {
+	var clusters []types.Resource
+	for _, clusterProp := range clusterProps {
+		c := makeCluster(&clusterProp)
+		clusters = append(clusters, c)
+	}
+	return clusters
+}
 
 func makeCluster(clusterProp *prop.Cluster) *cluster.Cluster {
 
@@ -225,30 +212,3 @@ func makeConfigSource() *core.ConfigSource {
 	}
 	return source
 }
-
-//func GenerateSnapshot(clusterProp prop.Cluster) *cache.Snapshot {
-//	var clusterProp = prop.Cluster{
-//		Name: ClusterName,
-//		SocketAddress: []prop.SocketAddress{
-//			{
-//				Protocol:  core.SocketAddress_TCP,
-//				Address:   UpstreamHost,
-//				PortValue: UpstreamPort,
-//			},
-//			{
-//				Protocol:  core.SocketAddress_TCP,
-//				Address:   UpstreamHost,
-//				PortValue: 8081,
-//			},
-//		},
-//	}
-//
-//	snap, _ := cache.NewSnapshot(version.GetNewVersion(),
-//		map[resource.Type][]types.Resource{
-//			resource.ClusterType: {makeCluster(clusterProp)},
-//			//resource.RouteType:    {makeRoute(RouteName, ClusterName)},
-//			resource.ListenerType: {makeHTTPListener(ListenerName, RouteName)},
-//		},
-//	)
-//	return snap
-//}

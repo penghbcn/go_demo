@@ -31,13 +31,11 @@ const (
 
 type Server struct {
 	xdsServer server.Server
-	cache     cache.Cache
-	//grpcServer grpc.Server
 }
 
 func NewServer(ctx context.Context, cache cache.SnapshotCache, cb *test.Callbacks) *Server {
 	srv := server.NewServer(ctx, cache, cb)
-	return &Server{srv, cache}
+	return &Server{srv}
 }
 
 func (s *Server) registerServer(grpcServer *grpc.Server) {
@@ -76,50 +74,6 @@ func (s *Server) Run(port uint) {
 	}
 
 	s.registerServer(grpcServer)
-
-	log.Printf("management server listening on %d\n", port)
-	if err = grpcServer.Serve(lis); err != nil {
-		log.Println(err)
-	}
-}
-
-func registerServer(grpcServer *grpc.Server, server server.Server) {
-	// register services
-	discoveryv3.RegisterAggregatedDiscoveryServiceServer(grpcServer, server)
-	endpointv3.RegisterEndpointDiscoveryServiceServer(grpcServer, server)
-	clusterv3.RegisterClusterDiscoveryServiceServer(grpcServer, server)
-	routev3.RegisterRouteDiscoveryServiceServer(grpcServer, server)
-	listenerv3.RegisterListenerDiscoveryServiceServer(grpcServer, server)
-	secretv3.RegisterSecretDiscoveryServiceServer(grpcServer, server)
-	runtimev3.RegisterRuntimeDiscoveryServiceServer(grpcServer, server)
-}
-
-// RunServer starts an xDS server at the given port.
-func RunServer(srv server.Server, port uint) {
-	// gRPC golang library sets a very small upper bound for the number gRPC/h2
-	// streams over a single TCP connection. If a proxy multiplexes requests over
-	// a single connection to the management server, then it might lead to
-	// availability problems. Keepalive timeouts based on connection_keepalive parameter https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/examples#dynamic
-	var grpcOptions []grpc.ServerOption
-	grpcOptions = append(grpcOptions,
-		grpc.MaxConcurrentStreams(grpcMaxConcurrentStreams),
-		grpc.KeepaliveParams(keepalive.ServerParameters{
-			Time:    grpcKeepaliveTime,
-			Timeout: grpcKeepaliveTimeout,
-		}),
-		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
-			MinTime:             grpcKeepaliveMinTime,
-			PermitWithoutStream: true,
-		}),
-	)
-	grpcServer := grpc.NewServer(grpcOptions...)
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	registerServer(grpcServer, srv)
 
 	log.Printf("management server listening on %d\n", port)
 	if err = grpcServer.Serve(lis); err != nil {

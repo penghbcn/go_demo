@@ -3,41 +3,34 @@ package controller
 import (
 	"control/plane/prop"
 	"control/plane/resource"
+	"errors"
 	core "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 )
 
-const (
-	ClusterName  = "example_proxy_cluster"
-	RouteName    = "local_route"
-	ListenerName = "listener_0"
-	ListenerPort = 10000
-	UpstreamHost = "192.168.176.1"
-	UpstreamPort = 8080
-)
-
-func AddCluster() {
-
+func AddCluster() error {
+	return errors.New("当前暂不支持添加cluster")
 }
 
 func DeleteClusterEndpoint() {
-	clusterProp := GetClusterEndpoint()
-	snapshot := resource.GenerateSnapshot(clusterProp)
-
-	resource.RefreshSnapshotCache(*snapshot)
+	//clusterProp, err := GetClusterEndpoint()
+	//snapshot := resource.GenerateSnapshot(clusterProp)
+	//
+	//resource.RefreshSnapshotCache(*snapshot)
 }
 
 func AddClusterEndpoint() {
-	clusterProp := resource.GetDefaultClusterEndpoint()
+	clusterProp := resource.GetClusterEndpoint(resource.ClusterName)
 	clusterProp.SocketAddress = append(clusterProp.SocketAddress, prop.SocketAddress{
 		Protocol:  core.SocketAddress_TCP,
-		Address:   UpstreamHost,
+		Address:   resource.UpstreamHost,
 		PortValue: 8081,
 	})
-	snapshot := resource.GenerateSnapshot(clusterProp)
+	xds := prop.XDS{Clusters: append(make([]prop.Cluster, 0), *clusterProp)}
+	snapshot := resource.GenerateSnapshot(&xds)
 
-	resource.RefreshSnapshotCache(*snapshot)
+	resource.RefreshSnapshotCache(snapshot)
 }
 
-func GetClusterEndpoint() *prop.Cluster {
-	return &prop.Cluster{Name: ClusterName, SocketAddress: []prop.SocketAddress{{core.SocketAddress_TCP, UpstreamHost, UpstreamPort}}}
+func r() {
+
 }
